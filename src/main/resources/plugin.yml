@@ -1,0 +1,4 @@
+name: '$pluginName'
+version: '$version'
+main: ru.joutak.template.EmptyPlugin
+api-version: '1.21.4'
