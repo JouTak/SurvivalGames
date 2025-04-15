@@ -1,1 +1,1 @@
-rootProject.name = "Template"
+rootProject.name = "SurvivalGames"
