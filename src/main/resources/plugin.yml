@@ -3,3 +3,24 @@ version: '$version'
 main: ru.joutak.sg.SurvivalGamesPlugin
 api-version: '1.21.4'
 depend: [ 'Multiverse-Core', 'KotlinPlugins' ]
+
+commands:
+  ready:
+    description: Встать в очередь/выйти из очереди на Survival Games
+
+  sgconfig:
+    description: Чтение и изменение значений конфига
+    permission: sg.admin
+
+permissions:
+  sg.admin:
+    default: op
+    children:
+      sg.spectator: true
+      mv.bypass.gamemode.*: true
+
+  sg.spectator:
+    default: false
+    children:
+      mv.bypass.gamemode.*: true
+      minecraft.command.spectate: true
