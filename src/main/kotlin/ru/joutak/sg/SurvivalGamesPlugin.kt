@@ -1,6 +1,7 @@
 package ru.joutak.sg
 
 import org.bukkit.plugin.java.JavaPlugin
+import ru.joutak.sg.arenas.ArenaManager
 import ru.joutak.sg.commands.ConfigCommand
 import ru.joutak.sg.config.Config
 
@@ -22,6 +23,7 @@ class SurvivalGamesPlugin : JavaPlugin() {
     }
 
     private fun loadData() {
+        ArenaManager.setTemplate()
         Config.loadConfig()
     }
     private fun registerCommands() {
