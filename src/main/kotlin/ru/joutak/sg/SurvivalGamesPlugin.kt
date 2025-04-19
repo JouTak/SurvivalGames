@@ -9,6 +9,7 @@ import ru.joutak.sg.arenas.ArenaManager
 import ru.joutak.sg.commands.ConfigCommand
 import ru.joutak.sg.commands.ReadyCommand
 import ru.joutak.sg.config.Config
+import ru.joutak.sg.listeners.PlayerJoinListener
 import ru.joutak.sg.lobby.LobbyManager
 
 class SurvivalGamesPlugin : JavaPlugin() {
@@ -41,6 +42,7 @@ class SurvivalGamesPlugin : JavaPlugin() {
         instance = this
 
         loadData()
+        registerEvents()
         registerCommands()
         LobbyManager.configure()
 
@@ -51,6 +53,12 @@ class SurvivalGamesPlugin : JavaPlugin() {
         ArenaManager.setTemplate()
         Config.loadConfig()
     }
+
+    private fun registerEvents() {
+        val manager = Bukkit.getPluginManager()
+        manager.registerEvents(PlayerJoinListener, instance)
+    }
+
     private fun registerCommands() {
         getCommand("ready")?.setExecutor(ReadyCommand)
         getCommand("sgconfig")?.setExecutor(ConfigCommand)
