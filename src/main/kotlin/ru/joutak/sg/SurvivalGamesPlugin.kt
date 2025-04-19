@@ -7,6 +7,7 @@ import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import ru.joutak.sg.arenas.ArenaManager
 import ru.joutak.sg.commands.ConfigCommand
+import ru.joutak.sg.commands.ReadyCommand
 import ru.joutak.sg.config.Config
 import ru.joutak.sg.lobby.LobbyManager
 
@@ -51,8 +52,10 @@ class SurvivalGamesPlugin : JavaPlugin() {
         Config.loadConfig()
     }
     private fun registerCommands() {
+        getCommand("ready")?.setExecutor(ReadyCommand)
         getCommand("sgconfig")?.setExecutor(ConfigCommand)
     }
+
     /**
      * Plugin shutdown logic
      */
