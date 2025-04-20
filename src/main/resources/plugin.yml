@@ -7,10 +7,36 @@ depend: [ 'Multiverse-Core', 'KotlinPlugins' ]
 commands:
   ready:
     description: Встать в очередь/выйти из очереди на Survival Games
+    usage: /ready
+
+  sgaddspawn:
+    description: Добавление спавна
+    permission: sg.admin
+    usage: /sgaddspawn <name> <x> <y> <z> <pitch> <yaw>
+
+  sgremovespawn:
+    description: Удаление спавна
+    permission: sg.admin
+    usage: /sgremovespawn <name>
+
+  sgspawnlist:
+    description: Список всех спавнов
+    permission: sg.admin
+    usage: /sgspawnlist
 
   sgconfig:
     description: Чтение и изменение значений конфига
     permission: sg.admin
+    usage: |
+      /sgconfig <key>
+      /sgconfig <key> <value>
+
+  sgspectate:
+    description: Наблюдение за играми
+    permission: sg.spectator
+    usage: |
+      /sgspectate <name>
+      /sgspectate
 
 permissions:
   sg.admin:

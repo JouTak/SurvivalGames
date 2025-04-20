@@ -3,6 +3,7 @@
     <ExternalSystemSettings>
       <option name="env">
         <map>
+          <entry key="SERVER_PATH" value="D:\ITMO\itmocraft\Servers\1.21.4" />
           <entry key="TESTING" value="1" />
         </map>
       </option>

@@ -5,7 +5,7 @@ import ru.joutak.sg.utils.PluginManager
 import java.io.File
 
 object Config {
-    private val configFile = File(PluginManager.survivalGames.dataFolder, "config.yml")
+    private val configFile = File(PluginManager.getDataFolder(), "config.yml")
     private val config: YamlConfiguration
 
     init {
@@ -14,9 +14,10 @@ object Config {
             PluginManager.survivalGames.saveResource("config.yml", true)
         }
         config = YamlConfiguration.loadConfiguration(configFile)
+        saveDefaults()
     }
 
-    fun loadConfig() {
+    private fun saveDefaults() {
         for (key in ConfigKeys.all) {
             if (!config.contains(key.path)) {
                 PluginManager

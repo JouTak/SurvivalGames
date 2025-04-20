@@ -11,6 +11,7 @@ import org.bukkit.GameMode
 import org.bukkit.GameRule
 import org.bukkit.World
 import org.bukkit.entity.Player
+import ru.joutak.blockparty.lobby.LobbyReadyBossBar
 import ru.joutak.sg.SurvivalGamesPlugin
 import ru.joutak.sg.config.Config
 import ru.joutak.sg.config.ConfigKeys
@@ -42,7 +43,8 @@ object LobbyManager {
                 .getMVWorld(world.name)
                 .spawnLocation,
         )
-
+        player.gameMode = GameMode.ADVENTURE
+        LobbyReadyBossBar.setFor(player)
         val audience = Audience.audience(player)
         audience.sendMessage(
             LinearComponents.linear(
@@ -55,7 +57,7 @@ object LobbyManager {
     }
 
     fun checkPlayers() {
-        val readyCount = world.players.count { PlayerData.get(it).isReady() }
+        val readyCount = world.players.count { PlayerData.get(it.uniqueId).isReady() }
 
         if (readyCount >= Config.get(ConfigKeys.PLAYERS_TO_START) && gameStartTask == null) {
             startCountdown()
@@ -114,8 +116,7 @@ object LobbyManager {
                             }
                             timeLeft--
                         } else {
-                            GameManager.createNewGame().start()
-                            resetTask()
+                            GameManager.createNewGame().prepare()
                         }
                     },
                     0L,
@@ -123,13 +124,15 @@ object LobbyManager {
                 ).taskId
     }
 
+    fun getPlayers(): Iterable<Player> = world.players
+
     fun getReadyPlayers(): Iterable<Player> =
         world.players
             .filter {
-                PlayerData.get(it).isReady()
-            }.sortedBy { PlayerData.get(it).getTimeSetReady() }
+                PlayerData.get(it.uniqueId).isReady()
+            }.sortedBy { PlayerData.get(it.uniqueId).getTimeSetReady() }
 
-    fun getNonReadyPlayers(): Iterable<Player> = world.players.filter { !PlayerData.get(it).isReady() }
+    fun getNonReadyPlayers(): Iterable<Player> = world.players.filter { !PlayerData.get(it.uniqueId).isReady() }
 
     fun configure() {
         val mvWorld = PluginManager.multiverseCore.mvWorldManager.getMVWorld(world)

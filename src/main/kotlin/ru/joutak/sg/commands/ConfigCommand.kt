@@ -7,6 +7,8 @@ import org.bukkit.command.TabExecutor
 import ru.joutak.sg.config.Config
 import ru.joutak.sg.config.ConfigKey
 import ru.joutak.sg.config.ConfigKeys
+import ru.joutak.sg.games.SpartakiadaManager
+import ru.joutak.sg.players.PlayerData
 
 object ConfigCommand : CommandExecutor, TabExecutor {
     override fun onCommand(
@@ -58,9 +60,8 @@ object ConfigCommand : CommandExecutor, TabExecutor {
 
         // Костыль чтобы не делать /reload confirm ;)
         if (key.path.equals(ConfigKeys.SPARTAKIADA_MODE.path)) {
-            TODO()
-            // PlayerData.reloadDatas()
-            // SpartakiadaManager.reload()
+            PlayerData.reloadDatas()
+            SpartakiadaManager.reload()
         }
 
         return true

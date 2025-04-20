@@ -2,67 +2,77 @@ package ru.joutak.sg.players
 
 import org.bukkit.Bukkit
 import org.bukkit.configuration.file.YamlConfiguration
-import org.bukkit.entity.Player
+import ru.joutak.sg.config.Config
+import ru.joutak.sg.config.ConfigKeys
+import ru.joutak.sg.games.SpartakiadaManager
 import ru.joutak.sg.lobby.LobbyManager
 import ru.joutak.sg.utils.PluginManager
 import java.io.File
+import java.io.IOException
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 
 data class PlayerData(
-    val nickname: String,
+    val playerUuid: UUID,
+    private val games: MutableList<UUID> = mutableListOf(),
 ) {
-    private var isReady: Boolean = false
-    private var timeSetReady: Long = Long.MAX_VALUE
+    private val dataFolder: File by lazy {
+        val root =
+            if (Config.get(ConfigKeys.SPARTAKIADA_MODE)) {
+                SpartakiadaManager.spartakiadaFolder
+            } else {
+                PluginManager.survivalGames.dataFolder
+            }
 
-    private val file = File(dataFolder, "${this.nickname}.yml")
-    private val playerData: YamlConfiguration
+        File(root, "players").apply { mkdirs() }
+    }
 
     companion object {
-        private var dataFolder = File(PluginManager.getDataFolder(), "players")
-        private val playerDatas = mutableMapOf<UUID, PlayerData>()
+        private val cache = ConcurrentHashMap<UUID, PlayerData>()
 
-        init {
-            if (!dataFolder.exists()) {
-                dataFolder.mkdirs()
-            }
-        }
+        fun get(uuid: UUID) = cache.getOrPut(uuid) { PlayerData(uuid) }
 
-        fun get(player: Player): PlayerData {
-            if (!playerDatas.containsKey(player.uniqueId)) {
-                playerDatas[player.uniqueId] = PlayerData(player.name)
-            }
+        fun reloadDatas() = cache.clear()
 
-            return playerDatas[player.uniqueId]!!
-        }
-
-        fun reload() {
-            playerDatas.clear()
-            dataFolder = File(PluginManager.getDataFolder(), "players")
+        fun resetPlayer(playerUuid: UUID) {
+            val player = Bukkit.getPlayer(playerUuid) ?: return
+            player.health = 20.0
+            player.foodLevel = 20
+            player.inventory.clear()
+            player.level = 0
+            player.exp = 0.0f
+            player.fireTicks = 0
         }
     }
 
+    private val file = File(dataFolder, "${this.playerUuid}.yml")
+    private val yaml: YamlConfiguration
+    private var isReady: Boolean = false
+    private var timeSetReady: Long = Long.MAX_VALUE
+
     init {
         if (file.createNewFile()) {
-            playerData = YamlConfiguration()
-            playerData.set("nickname", nickname)
-            playerData.set("playerUuid", Bukkit.getOfflinePlayer(nickname).uniqueId.toString())
-            // playerData.set("games", emptyList<String>())
+            yaml = YamlConfiguration()
+            yaml.set("nickname", Bukkit.getOfflinePlayer(playerUuid).name)
+            yaml.set("playerUuid", playerUuid.toString())
+            yaml.set("games", emptyList<String>())
             // playerData.set("maxRounds", 0)
             // playerData.set("hasWon", false)
             // playerData.set("hasBalls", false)
-            playerData.save(file)
+            yaml.save(file)
         } else {
-            playerData = YamlConfiguration.loadConfiguration(file)
-            for (game in playerData.get("games") as List<String>) {
-                // games.add(UUID.fromString(game))
+            yaml = YamlConfiguration.loadConfiguration(file)
+            for (game in yaml.getStringList("games")) {
+                games.add(UUID.fromString(game))
             }
+            yaml.getLong("test")
             // hasWon = playerData.get("hasWon") as Boolean
         }
     }
 
     fun isInLobby(): Boolean =
         Bukkit
-            .getPlayer(nickname)
+            .getPlayer(playerUuid)
             ?.world
             ?.name
             .equals(LobbyManager.world.name)
@@ -80,4 +90,23 @@ data class PlayerData(
     }
 
     fun getTimeSetReady(): Long = timeSetReady
+
+    fun addGame(gameUuid: UUID) {
+        games.add(gameUuid)
+        yaml.set("games", games.map { it.toString() })
+        yaml.save(file)
+    }
+
+    fun getGames(): List<UUID> = games
+
+    fun save() {
+        try {
+            yaml.set("nickname", Bukkit.getOfflinePlayer(playerUuid).name)
+            yaml.save(file)
+        } catch (e: IOException) {
+            PluginManager.getLogger().severe("Ошибка при сохранении информации о игроке: ${e.message}")
+        } finally {
+            cache.remove(playerUuid)
+        }
+    }
 }

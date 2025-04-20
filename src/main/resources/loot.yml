@@ -1,0 +1,281 @@
+loot:
+  - material: DIAMOND_SWORD
+    chance: 3.0
+    min: 1
+    max: 1
+
+  - material: BREAD
+    chance: 30.0
+    min: 1
+    max: 4
+
+  - material: IRON_CHESTPLATE
+    chance: 10.0
+    min: 1
+    max: 1
+
+  - material: DIAMOND
+    chance: 7.0
+    min: 1
+    max: 1
+
+  - material: GOLD_INGOT
+    chance: 12.0
+    min: 1
+    max: 3
+
+  - material: IRON_INGOT
+    chance: 12.0
+    min: 1
+    max: 3
+
+  - material: FLINT
+    chance: 30.0
+    min: 1
+    max: 4
+
+  - material: STICK
+    chance: 40.0
+    min: 1
+    max: 4
+
+  - material: STRING
+    chance: 25.0
+    min: 1
+    max: 2
+
+  - material: FEATHER
+    chance: 20.0
+    min: 1
+    max: 3
+
+  - material: WIND_CHARGE
+    chance: 15.0
+    min: 1
+    max: 3
+
+  - material: MACE
+    chance: 1.0
+    min: 1
+    max: 1
+
+  - material: PUMPKIN_PIE
+    chance: 5.0
+    min: 1
+    max: 3
+
+  - material: APPLE
+    chance: 10.0
+    min: 1
+    max: 3
+
+  - material: COBWEB
+    chance: 7.0
+    min: 1
+    max: 2
+
+  - material: BROWN_MUSHROOM
+    chance: 15.0
+    min: 1
+    max: 3
+
+  - material: RED_MUSHROOM
+    chance: 15.0
+    min: 1
+    max: 3
+
+  - material: LAPIS_LAZULI
+    chance: 15.0
+    min: 1
+    max: 3
+
+  - material: EXPERIENCE_BOTTLE
+    chance: 10.0
+    min: 1
+    max: 3
+
+  - material: GOLDEN_BOOTS
+    chance: 22.0
+    min: 1
+    max: 1
+
+  - material: GOLDEN_HELMET
+    chance: 22.0
+    min: 1
+    max: 1
+
+  - material: GOLDEN_LEGGINGS
+    chance: 15.0
+    min: 1
+    max: 1
+
+  - material: GOLDEN_CHESTPLATE
+    chance: 15.0
+    min: 1
+    max: 1
+
+  - material: IRON_BOOTS
+    chance: 18.0
+    min: 1
+    max: 1
+
+  - material: IRON_HELMET
+    chance: 18.0
+    min: 1
+    max: 1
+
+  - material: IRON_LEGGINGS
+    chance: 12.0
+    min: 1
+    max: 1
+
+  - material: WOODEN_SWORD
+    chance: 25.0
+    min: 1
+    max: 1
+
+  - material: STONE_SWORD
+    chance: 17.0
+    min: 1
+    max: 1
+
+  - material: GOLDEN_SWORD
+    chance: 25.0
+    min: 1
+    max: 1
+
+  - material: IRON_SHOVEL
+    chance: 10.0
+    min: 1
+    max: 1
+
+  - material: WOODEN_SHOVEL
+    chance: 25.0
+    min: 1
+    max: 1
+
+  - material: STONE_SHOVEL
+    chance: 17.0
+    min: 1
+    max: 1
+
+  - material: GOLDEN_SHOVEL
+    chance: 25.0
+    min: 1
+    max: 1
+
+  - material: IRON_SHOVEL
+    chance: 10.0
+    min: 1
+    max: 1
+
+  - material: WOODEN_SWORD
+    chance: 25.0
+    min: 1
+    max: 1
+
+  - material: STONE_SWORD
+    chance: 17.0
+    min: 1
+    max: 1
+
+  - material: GOLDEN_SWORD
+    chance: 25.0
+    min: 1
+    max: 1
+
+  - material: DIAMOND_SHOVEL
+    chance: 3.0
+    min: 1
+    max: 1
+
+  - material: IRON_AXE
+    chance: 10.0
+    min: 1
+    max: 1
+
+  - material: WOODEN_AXE
+    chance: 25.0
+    min: 1
+    max: 1
+
+  - material: STONE_AXE
+    chance: 17.0
+    min: 1
+    max: 1
+
+  - material: GOLDEN_AXE
+    chance: 25.0
+    min: 1
+    max: 1
+
+  - material: DIAMOND_AXE
+    chance: 3.0
+    min: 1
+    max: 1
+
+  - material: IRON_PICKAXE
+    chance: 10.0
+    min: 1
+    max: 1
+
+  - material: WOODEN_PICKAXE
+    chance: 25.0
+    min: 1
+    max: 1
+
+  - material: STONE_PICKAXE
+    chance: 17.0
+    min: 1
+    max: 1
+
+  - material: GOLDEN_PICKAXE
+    chance: 25.0
+    min: 1
+    max: 1
+
+  - material: DIAMOND_PICKAXE
+    chance: 3.0
+    min: 1
+    max: 1
+
+  - material: CHAINMAIL_BOOTS
+    chance: 20.0
+    min: 1
+    max: 1
+
+  - material: CHAINMAIL_HELMET
+    chance: 20.0
+    min: 1
+    max: 1
+
+  - material: CHAINMAIL_LEGGINGS
+    chance: 15.0
+    min: 1
+    max: 1
+
+  - material: CHAINMAIL_CHESTPLATE
+    chance: 15.0
+    min: 1
+    max: 1
+
+  - material: LEATHER_BOOTS
+    chance: 20.0
+    min: 1
+    max: 1
+
+  - material: LEATHER_HELMET
+    chance: 20.0
+    min: 1
+    max: 1
+
+  - material: LEATHER_LEGGINGS
+    chance: 15.0
+    min: 1
+    max: 1
+
+  - material: LEATHER_CHESTPLATE
+    chance: 15.0
+    min: 1
+    max: 1
+
