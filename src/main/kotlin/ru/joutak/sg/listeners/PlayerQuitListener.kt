@@ -4,6 +4,7 @@ import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerQuitEvent
+import ru.joutak.minigames.managers.MatchmakingManager
 import ru.joutak.sg.games.GameManager
 import ru.joutak.sg.games.GamePhase
 import ru.joutak.sg.lobby.LobbyManager
@@ -15,6 +16,8 @@ object PlayerQuitListener : Listener {
     fun onQuit(event: PlayerQuitEvent) {
         val player = event.player
         val lastGame = GameManager.getByPlayer(player)
+
+        MatchmakingManager.removePlayer(player)
 
         Bukkit.getScheduler().runTaskLater(
             PluginManager.survivalGames,

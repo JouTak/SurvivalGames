@@ -7,6 +7,10 @@ import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import ru.joutak.blockparty.listeners.PlayerChangedWorldListener
 import ru.joutak.blockparty.lobby.LobbyReadyBossBar
+import ru.joutak.minigames.MiniGamesCore
+import ru.joutak.minigames.domain.GameInstanceConfig
+import ru.joutak.minigames.domain.MatchmakingMode
+import ru.joutak.minigames.managers.MatchmakingManager
 import ru.joutak.sg.arenas.ArenaManager
 import ru.joutak.sg.arenas.SpawnManager
 import ru.joutak.sg.commands.AddSpawnCommand
@@ -15,6 +19,9 @@ import ru.joutak.sg.commands.ReadyCommand
 import ru.joutak.sg.commands.RemoveSpawnCommand
 import ru.joutak.sg.commands.SpawnListCommand
 import ru.joutak.sg.commands.SpectateCommand
+import ru.joutak.sg.config.Config
+import ru.joutak.sg.config.ConfigKeys
+import ru.joutak.sg.games.GameManager
 import ru.joutak.sg.games.SpartakiadaManager
 import ru.joutak.sg.listeners.ChestListener
 import ru.joutak.sg.listeners.PlayerDamageListener
@@ -54,13 +61,23 @@ class SurvivalGamesPlugin : JavaPlugin() {
     override fun onEnable() {
         instance = this
 
+        MiniGamesCore.initialize(this)
         loadData()
+        loadArenas()
         registerEvents()
         registerCommands()
         LobbyManager.configure()
         LobbyReadyBossBar.removeAllBossBars()
         LobbyReadyBossBar.checkLobby()
         SpartakiadaManager.watchParticipantsChanges()
+
+        server.scheduler.runTaskTimer(this, Runnable {
+            val ready = MatchmakingManager.pollReady()
+            if (ready != null) {
+                logger.info("Инстанс готов к запуску — создаём игру!")
+                GameManager.createGameFromInstance(ready)
+            }
+        }, 20L, 20L)
 
         logger.info("Плагин ${pluginMeta.name} версии ${pluginMeta.version} включен!")
     }
@@ -71,6 +88,24 @@ class SurvivalGamesPlugin : JavaPlugin() {
         SpawnManager.loadSpawns()
         LootManager.loadLoot()
         SpartakiadaManager.reload()
+    }
+
+    private fun loadArenas() {
+        val maxPlayers = Config.get(ConfigKeys.MAX_PLAYERS_IN_GAME)
+        MatchmakingManager.loadInstances(
+            listOf(
+                GameInstanceConfig(
+                    id = "survival_arena",
+                    teamCount = 1,
+                    playersPerTeam = maxPlayers,
+                    matchmakingMode = MatchmakingMode.SOLO,
+                    meta = mapOf(
+                        "world" to Config.get(ConfigKeys.ARENA_WORLD_NAME),
+                        "solo" to true,
+                    ),
+                ),
+            ),
+        )
     }
 
     private fun registerEvents() {

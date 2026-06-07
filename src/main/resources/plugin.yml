@@ -2,7 +2,7 @@ name: '$pluginName'
 version: '$version'
 main: ru.joutak.sg.SurvivalGamesPlugin
 api-version: '1.21.4'
-depend: [ 'Multiverse-Core', 'KotlinPlugins' ]
+depend: [ 'Multiverse-Core', 'KotlinPlugins', 'MiniGamesAPI' ]
 
 commands:
   ready:

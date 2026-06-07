@@ -2,6 +2,7 @@ package ru.joutak.sg.games
 
 import org.bukkit.World
 import org.bukkit.entity.Player
+import ru.joutak.minigames.domain.GameInstance
 import ru.joutak.sg.arenas.ArenaManager
 import ru.joutak.sg.config.Config
 import ru.joutak.sg.config.ConfigKeys
@@ -10,6 +11,15 @@ import java.util.UUID
 
 object GameManager {
     private val games = mutableMapOf<UUID, Game>()
+
+    fun createGameFromInstance(instance: GameInstance): Game {
+        val arena = ArenaManager.cloneArena()
+        val players = instance.teams.flatten().map { it.uniqueId }
+        val game = Game(arena, players)
+        games[game.uuid] = game
+        game.prepare()
+        return game
+    }
 
     fun createNewGame(): Game {
         val arena = ArenaManager.cloneArena()

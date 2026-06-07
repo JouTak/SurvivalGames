@@ -9,8 +9,8 @@ import org.bukkit.command.CommandSender
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 import ru.joutak.blockparty.lobby.LobbyReadyBossBar
+import ru.joutak.minigames.managers.MatchmakingManager
 import ru.joutak.sg.SurvivalGamesPlugin
-import ru.joutak.sg.lobby.LobbyManager
 import ru.joutak.sg.players.PlayerData
 
 object ReadyCommand : CommandExecutor, TabExecutor {
@@ -29,15 +29,13 @@ object ReadyCommand : CommandExecutor, TabExecutor {
             return false
         }
 
-        val playerData = PlayerData.get(sender.uniqueId)
-
-        if (!playerData.isInLobby()) {
+        if (!PlayerData.get(sender.uniqueId).isInLobby()) {
             sender.sendMessage("Данную команду можно использовать только в лобби.")
             return true
         }
 
-        if (playerData.isReady()) {
-            playerData.setReady(false)
+        if (MatchmakingManager.isPlayerInAnyInstance(sender.uniqueId)) {
+            MatchmakingManager.removePlayer(sender)
             sender.sendMessage(
                 LinearComponents.linear(
                     Component.text("Вы "),
@@ -48,7 +46,7 @@ object ReadyCommand : CommandExecutor, TabExecutor {
                 ),
             )
         } else {
-            playerData.setReady(true)
+            MatchmakingManager.addPlayer(sender)
             sender.sendMessage(
                 LinearComponents.linear(
                     Component.text("Вы "),
@@ -59,7 +57,6 @@ object ReadyCommand : CommandExecutor, TabExecutor {
                 ),
             )
         }
-        LobbyManager.checkPlayers()
         LobbyReadyBossBar.checkLobby()
         return true
     }
