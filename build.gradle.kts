@@ -24,6 +24,7 @@ repositories {
     }
     maven("https://repo.onarandombox.com/content/groups/public/")
     maven("https://maven.joutak.ru/snapshots")
+    maven("https://maven.joutak.ru/releases")
     maven("https://jitpack.io")
 }
 
@@ -32,12 +33,12 @@ dependencies {
     compileOnly("com.onarandombox.multiversecore:multiverse-core:4.3.14")
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib")
-    implementation("ru.joutak:minigamesapi:3.4.3-128")
+    implementation("ru.joutak:minigamesapi:3.6.3")
     implementation("org.mariadb.jdbc:mariadb-java-client:3.5.7")
 
     // Server plugin JARs placed next to SurvivalGames.jar in the test container
     serverPlugins("com.onarandombox.multiversecore:multiverse-core:4.3.14")
-    serverPlugins("ru.joutak:minigamesapi:3.4.3-128")
+    serverPlugins("ru.joutak:minigamesapi:3.6.3")
 
     // Integration test dependencies
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.0")
