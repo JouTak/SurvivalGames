@@ -2,6 +2,7 @@ package ru.joutak.sg.players
 
 import org.bukkit.Bukkit
 import org.bukkit.configuration.file.YamlConfiguration
+import ru.joutak.minigames.managers.MatchmakingManager
 import ru.joutak.sg.config.Config
 import ru.joutak.sg.config.ConfigKeys
 import ru.joutak.sg.games.SpartakiadaManager
@@ -47,8 +48,6 @@ data class PlayerData(
 
     private val file = File(dataFolder, "${this.playerUuid}.yml")
     private val yaml: YamlConfiguration
-    private var isReady: Boolean = false
-    private var timeSetReady: Long = Long.MAX_VALUE
 
     init {
         if (file.createNewFile()) {
@@ -77,19 +76,7 @@ data class PlayerData(
             ?.name
             .equals(LobbyManager.world.name)
 
-    fun isReady() = isReady
-
-    fun setReady(isReady: Boolean) {
-        this.isReady = isReady
-
-        if (isReady) {
-            timeSetReady = System.currentTimeMillis()
-        } else {
-            timeSetReady = Long.MAX_VALUE
-        }
-    }
-
-    fun getTimeSetReady(): Long = timeSetReady
+    fun isReady(): Boolean = MatchmakingManager.isPlayerInAnyInstance(playerUuid)
 
     fun addGame(gameUuid: UUID) {
         games.add(gameUuid)

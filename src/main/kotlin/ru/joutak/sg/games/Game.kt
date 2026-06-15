@@ -11,6 +11,11 @@ import org.bukkit.GameMode
 import org.bukkit.World
 import org.bukkit.entity.Player
 import ru.joutak.blockparty.lobby.LobbyReadyBossBar
+import ru.joutak.minigames.MiniGamesAPI
+import ru.joutak.minigames.managers.MatchmakingManager
+import ru.joutak.minigames.results.model.MatchResult
+import ru.joutak.minigames.results.model.Metric
+import ru.joutak.minigames.results.model.PlayerResult
 import ru.joutak.sg.SurvivalGamesPlugin
 import ru.joutak.sg.arenas.ArenaManager
 import ru.joutak.sg.arenas.SpawnManager
@@ -28,6 +33,12 @@ class Game(
     private val players: Iterable<UUID>,
 ) : Runnable {
     val uuid = UUID.randomUUID()
+    val matchId: UUID = UUID.randomUUID()
+    val startedAtMs: Long = System.currentTimeMillis()
+    @Volatile private var resultsSent: Boolean = false
+    private val playerNames: MutableMap<UUID, String> = mutableMapOf()
+    private val playerJoinedAtMs: MutableMap<UUID, Long> = mutableMapOf()
+
     private val logger = GameLogger(this)
     private val scoreboard = GameScoreboard()
     private val onlinePlayers: MutableSet<UUID> = mutableSetOf()
@@ -43,10 +54,12 @@ class Game(
         ArenaManager.configureArena(arena)
         phase = GamePhase.STARTING
 
+        val now = System.currentTimeMillis()
         for (playerUuid in players) {
             val playerData = PlayerData.get(playerUuid)
             playerData.addGame(this.uuid)
-            playerData.setReady(false)
+            playerNames[playerUuid] = Bukkit.getOfflinePlayer(playerUuid).name ?: "Unknown"
+            playerJoinedAtMs[playerUuid] = now
             PlayerData.resetPlayer(playerUuid)
             onlinePlayers.add(playerUuid)
             Bukkit.getPlayer(playerUuid)?.let {
@@ -62,7 +75,6 @@ class Game(
             }
         }
 
-        LobbyManager.resetTask()
         LobbyReadyBossBar.checkLobby()
 
         logger.info(
@@ -230,6 +242,7 @@ class Game(
             PlayerData.resetPlayer(playerUuid)
 
             Bukkit.getPlayer(playerUuid)?.let {
+                MatchmakingManager.removePlayer(it)
                 scoreboard.removeFor(it)
                 LobbyManager.teleportToLobby(it)
             }
@@ -351,6 +364,8 @@ class Game(
 
             logger.info("Победителем стал: ${places.peek()}")
 
+            recordMatchResultIfNeeded()
+
             phase = GamePhase.ENDING
             timeLeft = Config.get(ConfigKeys.TIME_BETWEEN_PHASES)
         }
@@ -405,6 +420,44 @@ class Game(
                     gameMode = GameMode.SPECTATOR
                 }
             }
+        }
+    }
+
+    private fun buildMatchResult(): MatchResult {
+        val now = System.currentTimeMillis()
+        val placesReversed = places.toList().asReversed()
+
+        val playerResults = placesReversed.mapIndexed { index, uuid ->
+            val placement = index + 1
+            PlayerResult(
+                playerUuid = uuid,
+                playerName = playerNames[uuid] ?: Bukkit.getOfflinePlayer(uuid).name,
+                teamId = null,
+                isWinner = placement == 1,
+                joinedAtMs = playerJoinedAtMs[uuid],
+                metrics = listOf(
+                    Metric.int("placement", placement.toLong()),
+                ),
+            )
+        }
+
+        return MatchResult(
+            matchId = matchId,
+            modeKey = "survivalgames",
+            mapKey = arena.name,
+            startedAtMs = startedAtMs,
+            endedAtMs = now,
+            players = playerResults,
+        )
+    }
+
+    private fun recordMatchResultIfNeeded() {
+        if (resultsSent) return
+        resultsSent = true
+        try {
+            MiniGamesAPI.recordMatchResult(buildMatchResult())
+        } catch (t: Throwable) {
+            logger.warning("Не удалось записать результат матча: ${t.message}")
         }
     }
 

@@ -11,6 +11,9 @@ plugins {
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
+// Plugin JARs to be copied to the test Minecraft server's plugins/ directory
+val serverPlugins: Configuration by configurations.creating
+
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/") {
@@ -20,6 +23,9 @@ repositories {
         name = "sonatype"
     }
     maven("https://repo.onarandombox.com/content/groups/public/")
+    maven("https://maven.joutak.ru/snapshots")
+    maven("https://maven.joutak.ru/releases")
+    maven("https://jitpack.io")
 }
 
 dependencies {
@@ -27,6 +33,30 @@ dependencies {
     compileOnly("com.onarandombox.multiversecore:multiverse-core:4.3.14")
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib")
+    implementation("ru.joutak:minigamesapi:3.6.3")
+    implementation("org.mariadb.jdbc:mariadb-java-client:3.5.7")
+
+    // Server plugin JARs placed next to SurvivalGames.jar in the test container
+    serverPlugins("com.onarandombox.multiversecore:multiverse-core:4.3.14")
+    serverPlugins("ru.joutak:minigamesapi:3.6.3")
+
+    // Integration test dependencies
+    testImplementation("org.junit.jupiter:junit-jupiter:5.11.0")
+    testImplementation("org.testcontainers:testcontainers:1.20.1")
+    testImplementation("org.testcontainers:junit-jupiter:1.20.1")
+    testImplementation("com.github.t9t.minecraft-rcon-client:minecraft-rcon-client:1.0.0")
+    testRuntimeOnly("org.slf4j:slf4j-simple:2.0.9")
+}
+
+// Copy server plugin JARs to build/server-plugins/ for use in integration tests
+tasks.register<Copy>("copyServerPlugins") {
+    from(serverPlugins)
+    into(layout.buildDirectory.dir("server-plugins"))
+}
+
+tasks.test {
+    useJUnitPlatform()
+    dependsOn("shadowJar", "copyServerPlugins")
 }
 
 kotlin {
