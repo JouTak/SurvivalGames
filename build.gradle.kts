@@ -24,7 +24,7 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
-    compileOnly("com.onarandombox.multiversecore:multiverse-core:4.3.14")
+    compileOnly("org.mvplugins.multiverse.core:multiverse-core:5.7.0")
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib")
 }

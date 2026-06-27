@@ -50,7 +50,7 @@ class Game(
             PlayerData.resetPlayer(playerUuid)
             onlinePlayers.add(playerUuid)
             Bukkit.getPlayer(playerUuid)?.let {
-                PluginManager.multiverseCore.teleportPlayer(Bukkit.getConsoleSender(), it, spawnManager.getNextSpawn(arena))
+                it.teleport(spawnManager.getNextSpawn(arena))
                 scoreboard.setFor(it)
                 Bukkit.getScheduler().runTaskLater(
                     PluginManager.survivalGames,
