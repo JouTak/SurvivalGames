@@ -11,6 +11,7 @@ import org.bukkit.GameMode
 import org.bukkit.GameRule
 import org.bukkit.World
 import org.bukkit.entity.Player
+import org.mvplugins.multiverse.core.MultiverseCoreApi
 import ru.joutak.blockparty.lobby.LobbyReadyBossBar
 import ru.joutak.sg.SurvivalGamesPlugin
 import ru.joutak.sg.config.Config
@@ -36,13 +37,7 @@ object LobbyManager {
     }
 
     fun teleportToLobby(player: Player) {
-        PluginManager.multiverseCore.teleportPlayer(
-            Bukkit.getConsoleSender(),
-            player,
-            PluginManager.multiverseCore.mvWorldManager
-                .getMVWorld(world.name)
-                .spawnLocation,
-        )
+        player.teleport(world.spawnLocation)
         player.gameMode = GameMode.ADVENTURE
         LobbyReadyBossBar.setFor(player)
         val audience = Audience.audience(player)
@@ -135,14 +130,29 @@ object LobbyManager {
     fun getNonReadyPlayers(): Iterable<Player> = world.players.filter { !PlayerData.get(it.uniqueId).isReady() }
 
     fun configure() {
-        val mvWorld = PluginManager.multiverseCore.mvWorldManager.getMVWorld(world)
-        PluginManager.multiverseCore.mvWorldManager.setFirstSpawnWorld(world.name)
-        mvWorld.setTime("day")
-        mvWorld.setEnableWeather(false)
-        mvWorld.setDifficulty(Difficulty.PEACEFUL)
-        mvWorld.setGameMode(GameMode.ADVENTURE)
-        mvWorld.setPVPMode(false)
-        mvWorld.setHunger(false)
+        val coreApi = MultiverseCoreApi.get();
+        val worldManager = coreApi.worldManager
+
+        val mvWorldOption = worldManager.getWorld(world.name)
+
+        if (mvWorldOption.isDefined) {
+            val mvWorld = mvWorldOption.get()
+
+            mvWorld.setAllowWeather(false)
+            mvWorld.setDifficulty(Difficulty.PEACEFUL)
+            mvWorld.setGameMode(GameMode.ADVENTURE)
+            mvWorld.setPvp(false)
+            mvWorld.setHunger(false)
+
+            try {
+                val setTimeMethod = mvWorld.javaClass.getMethod("setTime", Long::class.java)
+                setTimeMethod.invoke(mvWorld, 1000L) // Day time
+            } catch (_: Exception) {
+            }
+        } else {
+            PluginManager.getLogger().warning("Мир ${world.name} не зарегистрирован в Multiverse")
+        }
+
 
         world.setGameRule(GameRule.FALL_DAMAGE, false)
         world.setGameRule(GameRule.DROWNING_DAMAGE, false)
