@@ -41,6 +41,7 @@ class Game(
 
     fun prepare() {
         ArenaManager.configureArena(arena)
+        ChestListener.prepareArena(arena)
         phase = GamePhase.STARTING
 
         for (playerUuid in players) {

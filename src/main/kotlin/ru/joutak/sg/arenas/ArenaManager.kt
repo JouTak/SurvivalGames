@@ -1,6 +1,5 @@
 package ru.joutak.sg.arenas
 
-import org.mvplugins.multiverse.core.MultiverseCore
 import org.bukkit.Bukkit
 import org.bukkit.Difficulty
 import org.bukkit.GameMode
@@ -14,6 +13,7 @@ import ru.joutak.sg.config.Config
 import ru.joutak.sg.config.ConfigKeys
 import ru.joutak.sg.utils.PluginManager
 import java.io.File
+import java.util.UUID
 
 object ArenaManager {
     private val arenas = mutableMapOf<String, World>()
@@ -90,11 +90,11 @@ object ArenaManager {
         world.setGameRule(GameRule.DO_MOB_SPAWNING, false)
     }
 
-    fun cloneArena(): World {
+    fun cloneArena(): World? {
         if (template == null) {
             throw NullPointerException("Отсутствует мир ${Config.get(ConfigKeys.ARENA_WORLD_NAME)}! Невозможно склонировать арену.")
         }
-        val worldName = "sg_arena_${arenas.size + 1}"
+        val worldName = "sg_arena_${UUID.randomUUID().toString().replace("-", "").take(8)}"
         val coreApi = MultiverseCoreApi.get();
         val worldManager = coreApi.worldManager
 
@@ -109,21 +109,22 @@ object ArenaManager {
             .keepWorldBorder(true)
             .saveBukkitWorld(true)
 
-        var cloneSuccess = false
-        var cloneError: String? = null
+        val cloneResult = worldManager.cloneWorld(cloneOptions)
+        if (cloneResult.isFailure) {
+            PluginManager.getLogger().severe(
+                "Не удалось клонировать мир $worldName: ${cloneResult.failureReason}",
+            )
+            return null
+        }
 
-        worldManager.cloneWorld(cloneOptions)
-            .onSuccess { newWorld ->
-                cloneSuccess = true
-                PluginManager.getLogger().info("Мир $worldName успешно склонирован")
-            }
-            .onFailure { failure ->
-                PluginManager.getLogger().severe("Не удалось клонировать мир: ${failure.failureMessage}")
-            }
+        val world = Bukkit.getWorld(worldName)
+        if (world == null) {
+            PluginManager.getLogger().severe("Мир $worldName создан Multiverse, но Bukkit не смог его загрузить.")
+            return null
+        }
 
-        var world = Bukkit.getWorld(worldName)
-
-        configureArena(world!!)
+        PluginManager.getLogger().info("Мир $worldName успешно склонирован")
+        configureArena(world)
         arenas[worldName] = world
         return world
     }

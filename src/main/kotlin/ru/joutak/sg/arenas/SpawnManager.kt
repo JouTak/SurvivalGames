@@ -32,6 +32,8 @@ class SpawnManager {
 
         fun getSpawns(): Map<String, SpawnLocation> = spawns
 
+        fun hasSpawns(): Boolean = spawns.isNotEmpty()
+
         fun loadSpawns() {
             if (!spawnsFile.exists()) {
                 PluginManager.survivalGames.saveResource("spawns.yml", true)
@@ -73,6 +75,8 @@ class SpawnManager {
     private val barriers = mutableSetOf<Location>()
 
     fun getNextSpawn(world: World): Location {
+        check(spawns.isNotEmpty()) { "Не настроены точки спавна для арены." }
+
         var next: SpawnLocation
         do {
             next = spawns.values.random()

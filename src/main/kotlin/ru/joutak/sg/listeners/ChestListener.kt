@@ -1,94 +1,76 @@
 package ru.joutak.sg.listeners
 
-import org.bukkit.Location
-import org.bukkit.Material
-import org.bukkit.NamespacedKey
 import org.bukkit.World
-import org.bukkit.block.Chest
+import org.bukkit.block.Block
+import org.bukkit.block.Container
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.persistence.PersistentDataType
 import ru.joutak.sg.arenas.ArenaManager
-import ru.joutak.sg.games.GameManager
 import ru.joutak.sg.loot.ChestManager
-import ru.joutak.sg.utils.PluginManager
+import ru.joutak.sg.loot.LootContainerType
 
 object ChestListener : Listener {
-    private val lootedChests = mutableSetOf<Location>()
+    private data class LootContainer(val type: LootContainerType, var generated: Boolean = false)
+    private data class BlockPosition(val x: Int, val y: Int, val z: Int)
+    private val arenaContainers = mutableMapOf<String, MutableMap<BlockPosition, LootContainer>>()
 
-    fun clearLootedChests(world: World) {
-        val iter = lootedChests.iterator()
-        while (iter.hasNext()) {
-            val loc = iter.next()
-            if (loc.world.name.equals(world.name)) {
-                iter.remove()
+    fun prepareArena(world: World) {
+        val containers = mutableMapOf<BlockPosition, LootContainer>()
+        val border = world.worldBorder
+        val minChunkX = kotlin.math.floor((border.center.x - border.size / 2) / 16.0).toInt()
+        val maxChunkX = kotlin.math.floor((border.center.x + border.size / 2) / 16.0).toInt()
+        val minChunkZ = kotlin.math.floor((border.center.z - border.size / 2) / 16.0).toInt()
+        val maxChunkZ = kotlin.math.floor((border.center.z + border.size / 2) / 16.0).toInt()
+
+        for (chunkX in minChunkX..maxChunkX) for (chunkZ in minChunkZ..maxChunkZ) {
+            val chunk = world.getChunkAt(chunkX, chunkZ)
+            chunk.tileEntities.forEach { state ->
+                val type = LootContainerType.from(state.type) ?: return@forEach
+                if (state is Container) containers[position(state.block)] = LootContainer(type)
             }
         }
+        arenaContainers[world.name] = containers
     }
 
-    @EventHandler
-    fun onChestOpen(event: PlayerInteractEvent) {
-        if (!ArenaManager.isArena(event.player.location.world)) return
-        if (event.action != Action.RIGHT_CLICK_BLOCK) return
+    fun clearLootedChests(world: World) {
+        arenaContainers.remove(world.name)
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    fun onContainerOpen(event: PlayerInteractEvent) {
         val block = event.clickedBlock ?: return
-        if (block.type != Material.CHEST) return
-
-        val state = block.state
-        if (state !is Chest) return
-
-        val location = block.location
-
-        PluginManager.getLogger().info("in chest event 3")
-        if (lootedChests.contains(location)) return
-
-        val data = state.persistentDataContainer
-        val key = NamespacedKey(PluginManager.survivalGames, "no_loot")
-        PluginManager.getLogger().info("in chest event 4")
-        if (data.has(key, PersistentDataType.BYTE)) return
-        PluginManager.getLogger().info("in chest event 5")
-
-        ChestManager.fillChest(state.blockInventory)
-
-        // event.player.closeInventory()
-        // event.player.openInventory(state.blockInventory)
-
-        lootedChests.add(location)
-        PluginManager.getLogger().info("Filled loot in chest at $location")
+        if (!ArenaManager.isArena(block.world) || !event.action.isRightClick) return
+        generate(block)
     }
 
-    @EventHandler
-    fun onChestBreak(event: BlockBreakEvent) {
-        val block = event.block
-        if (block.type != Material.CHEST) return
-        if (!ArenaManager.isArena(event.player.location.world)) return
+    @EventHandler(ignoreCancelled = true)
+    fun onContainerBreak(event: BlockBreakEvent) = generate(event.block)
 
-        val location = block.location
-        if (lootedChests.contains(location)) return
+    @EventHandler(ignoreCancelled = true)
+    fun onExplosion(event: EntityExplodeEvent) = event.blockList().forEach(::generate)
 
-        val state = block.state
-        if (state !is Chest) return
-        ChestManager.fillChest(state.blockInventory)
+    @EventHandler(ignoreCancelled = true)
+    fun onExplosion(event: BlockExplodeEvent) = event.blockList().forEach(::generate)
 
-        state.blockInventory.forEach { item ->
-            block.world.dropItemNaturally(block.location, item)
+    @EventHandler(ignoreCancelled = true)
+    fun onContainerPlace(event: BlockPlaceEvent) {
+        if (ArenaManager.isArena(event.blockPlaced.world)) {
+            arenaContainers[event.blockPlaced.world.name]?.remove(position(event.blockPlaced))
         }
     }
 
-    @EventHandler
-    fun onPlayerPlaceChest(event: BlockPlaceEvent) {
-        if (event.blockPlaced.type != Material.CHEST) return
-        if (!GameManager.isPlaying(event.player)) return
-
-        val state = event.blockPlaced.state
-        if (state is Chest) {
-            val data = state.persistentDataContainer
-            val key = NamespacedKey(PluginManager.survivalGames, "no_loot")
-            data.set(key, PersistentDataType.BYTE, 1.toByte())
-            state.update()
-        }
+    private fun generate(block: Block) {
+        val entry = arenaContainers[block.world.name]?.get(position(block)) ?: return
+        if (entry.generated) return
+        val state = block.state as? Container ?: return
+        ChestManager.fillContainer(state.inventory, entry.type)
+        entry.generated = true
     }
+
+    private fun position(block: Block) = BlockPosition(block.x, block.y, block.z)
 }

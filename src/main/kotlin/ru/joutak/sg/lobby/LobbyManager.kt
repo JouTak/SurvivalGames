@@ -111,7 +111,7 @@ object LobbyManager {
                             }
                             timeLeft--
                         } else {
-                            GameManager.createNewGame().prepare()
+                            GameManager.createNewGame()?.prepare()
                         }
                     },
                     0L,
@@ -169,5 +169,12 @@ object LobbyManager {
             Bukkit.getScheduler().cancelTask(gameStartTask!!)
         }
         gameStartTask = null
+    }
+
+    fun notifyGameStartFailed(message: String) {
+        PluginManager.getLogger().warning(message)
+        Audience.audience(getReadyPlayers()).sendMessage(Component.text(message, NamedTextColor.RED))
+        resetTask()
+        LobbyReadyBossBar.checkLobby()
     }
 }

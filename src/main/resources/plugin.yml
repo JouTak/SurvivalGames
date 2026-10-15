@@ -2,7 +2,7 @@ name: '$pluginName'
 version: '$version'
 main: ru.joutak.sg.SurvivalGamesPlugin
 api-version: '1.21.4'
-depend: [ 'Multiverse-Core', 'KotlinPlugins' ]
+depend: [ 'Multiverse-Core']
 
 commands:
   ready:
@@ -12,7 +12,7 @@ commands:
   sgaddspawn:
     description: Добавление спавна
     permission: sg.admin
-    usage: /sgaddspawn <name> <x> <y> <z> <pitch> <yaw>
+    usage: /sgaddspawn <name> <x> <y> <z> <yaw> <pitch>
 
   sgremovespawn:
     description: Удаление спавна

@@ -5,7 +5,7 @@ import org.bukkit.enchantments.Enchantment
 
 data class LootItem(
     val material: Material,
-    val chance: Double,
+    val weight: Int,
     val min: Int,
     val max: Int,
     val name: String? = null,
