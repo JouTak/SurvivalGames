@@ -3,6 +3,7 @@ package ru.joutak.sg.games
 import org.bukkit.World
 import org.bukkit.entity.Player
 import ru.joutak.sg.arenas.ArenaManager
+import ru.joutak.sg.arenas.SpawnManager
 import ru.joutak.sg.config.Config
 import ru.joutak.sg.config.ConfigKeys
 import ru.joutak.sg.lobby.LobbyManager
@@ -11,8 +12,16 @@ import java.util.UUID
 object GameManager {
     private val games = mutableMapOf<UUID, Game>()
 
-    fun createNewGame(): Game {
-        val arena = ArenaManager.cloneArena()
+    fun createNewGame(): Game? {
+        if (!SpawnManager.hasSpawns()) {
+            LobbyManager.notifyGameStartFailed("Не настроены точки спавна. Обратитесь к администрации.")
+            return null
+        }
+
+        val arena = ArenaManager.cloneArena() ?: run {
+            LobbyManager.notifyGameStartFailed("Не удалось подготовить арену. Попробуйте ещё раз позже.")
+            return null
+        }
         val players =
             LobbyManager.getReadyPlayers().take(
                 minOf(LobbyManager.getReadyPlayers().count(), Config.get(ConfigKeys.MAX_PLAYERS_IN_GAME)),

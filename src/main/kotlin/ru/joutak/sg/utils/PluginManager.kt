@@ -1,6 +1,6 @@
 package ru.joutak.sg.utils
 
-import com.onarandombox.MultiverseCore.MultiverseCore
+import org.mvplugins.multiverse.core.MultiverseCore
 import org.bukkit.Bukkit
 import ru.joutak.sg.SurvivalGamesPlugin
 import java.io.File

@@ -1,281 +1,55 @@
-loot:
-  - material: DIAMOND_SWORD
-    chance: 3.0
-    min: 1
-    max: 1
-
-  - material: BREAD
-    chance: 30.0
-    min: 1
-    max: 4
-
-  - material: IRON_CHESTPLATE
-    chance: 10.0
-    min: 1
-    max: 1
-
-  - material: DIAMOND
-    chance: 7.0
-    min: 1
-    max: 1
-
-  - material: GOLD_INGOT
-    chance: 12.0
-    min: 1
-    max: 3
-
-  - material: IRON_INGOT
-    chance: 12.0
-    min: 1
-    max: 3
-
-  - material: FLINT
-    chance: 30.0
-    min: 1
-    max: 4
-
-  - material: STICK
-    chance: 40.0
-    min: 1
-    max: 4
-
-  - material: STRING
-    chance: 25.0
-    min: 1
-    max: 2
-
-  - material: FEATHER
-    chance: 20.0
-    min: 1
-    max: 3
-
-  - material: WIND_CHARGE
-    chance: 15.0
-    min: 1
-    max: 3
-
-  - material: MACE
-    chance: 1.0
-    min: 1
-    max: 1
-
-  - material: PUMPKIN_PIE
-    chance: 5.0
-    min: 1
-    max: 3
-
-  - material: APPLE
-    chance: 10.0
-    min: 1
-    max: 3
-
-  - material: COBWEB
-    chance: 7.0
-    min: 1
-    max: 2
-
-  - material: BROWN_MUSHROOM
-    chance: 15.0
-    min: 1
-    max: 3
-
-  - material: RED_MUSHROOM
-    chance: 15.0
-    min: 1
-    max: 3
-
-  - material: LAPIS_LAZULI
-    chance: 15.0
-    min: 1
-    max: 3
-
-  - material: EXPERIENCE_BOTTLE
-    chance: 10.0
-    min: 1
-    max: 3
-
-  - material: GOLDEN_BOOTS
-    chance: 22.0
-    min: 1
-    max: 1
-
-  - material: GOLDEN_HELMET
-    chance: 22.0
-    min: 1
-    max: 1
-
-  - material: GOLDEN_LEGGINGS
-    chance: 15.0
-    min: 1
-    max: 1
-
-  - material: GOLDEN_CHESTPLATE
-    chance: 15.0
-    min: 1
-    max: 1
-
-  - material: IRON_BOOTS
-    chance: 18.0
-    min: 1
-    max: 1
-
-  - material: IRON_HELMET
-    chance: 18.0
-    min: 1
-    max: 1
-
-  - material: IRON_LEGGINGS
-    chance: 12.0
-    min: 1
-    max: 1
-
-  - material: WOODEN_SWORD
-    chance: 25.0
-    min: 1
-    max: 1
-
-  - material: STONE_SWORD
-    chance: 17.0
-    min: 1
-    max: 1
-
-  - material: GOLDEN_SWORD
-    chance: 25.0
-    min: 1
-    max: 1
-
-  - material: IRON_SHOVEL
-    chance: 10.0
-    min: 1
-    max: 1
-
-  - material: WOODEN_SHOVEL
-    chance: 25.0
-    min: 1
-    max: 1
-
-  - material: STONE_SHOVEL
-    chance: 17.0
-    min: 1
-    max: 1
-
-  - material: GOLDEN_SHOVEL
-    chance: 25.0
-    min: 1
-    max: 1
-
-  - material: IRON_SHOVEL
-    chance: 10.0
-    min: 1
-    max: 1
-
-  - material: WOODEN_SWORD
-    chance: 25.0
-    min: 1
-    max: 1
-
-  - material: STONE_SWORD
-    chance: 17.0
-    min: 1
-    max: 1
-
-  - material: GOLDEN_SWORD
-    chance: 25.0
-    min: 1
-    max: 1
-
-  - material: DIAMOND_SHOVEL
-    chance: 3.0
-    min: 1
-    max: 1
-
-  - material: IRON_AXE
-    chance: 10.0
-    min: 1
-    max: 1
-
-  - material: WOODEN_AXE
-    chance: 25.0
-    min: 1
-    max: 1
-
-  - material: STONE_AXE
-    chance: 17.0
-    min: 1
-    max: 1
-
-  - material: GOLDEN_AXE
-    chance: 25.0
-    min: 1
-    max: 1
-
-  - material: DIAMOND_AXE
-    chance: 3.0
-    min: 1
-    max: 1
-
-  - material: IRON_PICKAXE
-    chance: 10.0
-    min: 1
-    max: 1
-
-  - material: WOODEN_PICKAXE
-    chance: 25.0
-    min: 1
-    max: 1
-
-  - material: STONE_PICKAXE
-    chance: 17.0
-    min: 1
-    max: 1
-
-  - material: GOLDEN_PICKAXE
-    chance: 25.0
-    min: 1
-    max: 1
-
-  - material: DIAMOND_PICKAXE
-    chance: 3.0
-    min: 1
-    max: 1
-
-  - material: CHAINMAIL_BOOTS
-    chance: 20.0
-    min: 1
-    max: 1
-
-  - material: CHAINMAIL_HELMET
-    chance: 20.0
-    min: 1
-    max: 1
-
-  - material: CHAINMAIL_LEGGINGS
-    chance: 15.0
-    min: 1
-    max: 1
-
-  - material: CHAINMAIL_CHESTPLATE
-    chance: 15.0
-    min: 1
-    max: 1
-
-  - material: LEATHER_BOOTS
-    chance: 20.0
-    min: 1
-    max: 1
-
-  - material: LEATHER_HELMET
-    chance: 20.0
-    min: 1
-    max: 1
-
-  - material: LEATHER_LEGGINGS
-    chance: 15.0
-    min: 1
-    max: 1
-
-  - material: LEATHER_CHESTPLATE
-    chance: 15.0
-    min: 1
-    max: 1
-
+# weight is relative within a pool; rolls is the number of item stacks generated.
+pools:
+  chest:
+    rolls: { min: 2, max: 4 }
+    items:
+      - { material: BREAD, weight: 20, min: 1, max: 3 }
+      - { material: APPLE, weight: 15, min: 1, max: 3 }
+      - { material: STICK, weight: 20, min: 1, max: 4 }
+      - { material: FLINT, weight: 15, min: 1, max: 3 }
+      - { material: WOODEN_SWORD, weight: 12, min: 1, max: 1 }
+      - { material: STONE_SWORD, weight: 7, min: 1, max: 1 }
+      - { material: LEATHER_HELMET, weight: 7, min: 1, max: 1 }
+      - { material: LEATHER_CHESTPLATE, weight: 5, min: 1, max: 1 }
+      - { material: COBWEB, weight: 3, min: 1, max: 2 }
+  waxed_copper_chest:
+    rolls: { min: 3, max: 5 }
+    items:
+      - { material: IRON_INGOT, weight: 18, min: 1, max: 3 }
+      - { material: GOLD_INGOT, weight: 12, min: 1, max: 2 }
+      - { material: IRON_SWORD, weight: 10, min: 1, max: 1 }
+      - { material: IRON_AXE, weight: 8, min: 1, max: 1 }
+      - { material: CHAINMAIL_CHESTPLATE, weight: 7, min: 1, max: 1 }
+      - { material: IRON_HELMET, weight: 8, min: 1, max: 1 }
+      - { material: EXPERIENCE_BOTTLE, weight: 12, min: 1, max: 3 }
+      - { material: WIND_CHARGE, weight: 8, min: 1, max: 2 }
+      - { material: GOLDEN_APPLE, weight: 3, min: 1, max: 1 }
+  waxed_oxidized_copper_chest:
+    rolls: { min: 4, max: 6 }
+    items:
+      - { material: DIAMOND, weight: 10, min: 1, max: 2 }
+      - { material: DIAMOND_SWORD, weight: 5, min: 1, max: 1 }
+      - { material: DIAMOND_AXE, weight: 5, min: 1, max: 1 }
+      - { material: DIAMOND_CHESTPLATE, weight: 2, min: 1, max: 1 }
+      - { material: IRON_CHESTPLATE, weight: 12, min: 1, max: 1 }
+      - { material: GOLDEN_APPLE, weight: 12, min: 1, max: 2 }
+      - { material: ENCHANTED_GOLDEN_APPLE, weight: 1, min: 1, max: 1 }
+      - { material: EXPERIENCE_BOTTLE, weight: 15, min: 2, max: 5 }
+      - { material: WIND_CHARGE, weight: 12, min: 2, max: 4 }
+  barrel:
+    rolls: { min: 2, max: 5 }
+    items:
+      - { material: BREAD, weight: 25, min: 1, max: 4 }
+      - { material: COOKED_BEEF, weight: 18, min: 1, max: 3 }
+      - { material: PUMPKIN_PIE, weight: 12, min: 1, max: 3 }
+      - { material: GOLDEN_CARROT, weight: 8, min: 1, max: 3 }
+      - { material: POTION, weight: 10, min: 1, max: 2 }
+      - { material: SPLASH_POTION, weight: 5, min: 1, max: 1 }
+      - { material: EXPERIENCE_BOTTLE, weight: 8, min: 1, max: 3 }
+      - { material: COBWEB, weight: 4, min: 1, max: 2 }
+      - { material: ARROW, weight: 10, min: 4, max: 12 }
+  trapped_chest:
+    rolls: { min: 2, max: 4 }
+    items:
+      - { material: GOLD_INGOT, weight: 10, min: 1, max: 3 }
+      - { material: TNT, weight: 1, min: 1, max: 1 }

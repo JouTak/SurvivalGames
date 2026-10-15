@@ -1,15 +1,19 @@
 package ru.joutak.sg.arenas
 
-import com.onarandombox.MultiverseCore.enums.AllowedPortalType
 import org.bukkit.Bukkit
 import org.bukkit.Difficulty
 import org.bukkit.GameMode
 import org.bukkit.GameRule
 import org.bukkit.World
+import org.mvplugins.multiverse.core.MultiverseCoreApi
+import org.mvplugins.multiverse.core.world.AllowedPortalType
+import org.mvplugins.multiverse.core.world.options.CloneWorldOptions
+import org.mvplugins.multiverse.core.world.options.DeleteWorldOptions
 import ru.joutak.sg.config.Config
 import ru.joutak.sg.config.ConfigKeys
 import ru.joutak.sg.utils.PluginManager
 import java.io.File
+import java.util.UUID
 
 object ArenaManager {
     private val arenas = mutableMapOf<String, World>()
@@ -49,16 +53,31 @@ object ArenaManager {
     }
 
     fun configureArena(world: World) {
-        val mvWorld = PluginManager.multiverseCore.mvWorldManager.getMVWorld(world)
-        mvWorld.setTime("day")
-        mvWorld.setEnableWeather(false)
-        mvWorld.setDifficulty(Difficulty.NORMAL)
-        mvWorld.setGameMode(GameMode.SURVIVAL)
-        mvWorld.setPVPMode(false) // будет включено во время игры через определенный cooldown
-        mvWorld.hunger = true
-        mvWorld.setAllowAnimalSpawn(true)
-        mvWorld.setAllowMonsterSpawn(false)
-        mvWorld.allowPortalMaking(AllowedPortalType.NONE)
+        val coreApi = MultiverseCoreApi.get();
+        val worldManager = coreApi.worldManager
+
+
+        val mvWorldOption = worldManager.getWorld(world.name)
+
+        if (mvWorldOption.isDefined) {
+            val mvWorld = mvWorldOption.get()
+
+            mvWorld.setAllowWeather(false)
+            mvWorld.setDifficulty(Difficulty.NORMAL)
+            mvWorld.setGameMode(GameMode.SURVIVAL)
+            mvWorld.setPvp(false)
+            mvWorld.setHunger(true)
+            mvWorld.setPortalForm(AllowedPortalType.NONE)
+
+
+            try {
+                val setTimeMethod = mvWorld.javaClass.getMethod("setTime", Long::class.java)
+                setTimeMethod.invoke(mvWorld, 1000L) // Day time
+            } catch (_: Exception) {
+            }
+        }
+
+
         world.setGameRule(GameRule.FALL_DAMAGE, true)
         world.setGameRule(GameRule.FIRE_DAMAGE, true)
         world.setGameRule(GameRule.DROWNING_DAMAGE, true)
@@ -68,37 +87,66 @@ object ArenaManager {
         world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false)
         world.worldBorder.size = 640.0
         world.worldBorder.center = world.spawnLocation
+        world.setGameRule(GameRule.DO_MOB_SPAWNING, false)
     }
 
-    fun cloneArena(): World {
+    fun cloneArena(): World? {
         if (template == null) {
             throw NullPointerException("Отсутствует мир ${Config.get(ConfigKeys.ARENA_WORLD_NAME)}! Невозможно склонировать арену.")
         }
-        val worldName = "sg_arena_${arenas.size + 1}"
-        if (!PluginManager.multiverseCore.mvWorldManager.cloneWorld(template!!.name, worldName)) {
-            throw Exception("Не удалось склонировать мир! Проверьте логи плагина MultiVerse.")
+        val worldName = "sg_arena_${UUID.randomUUID().toString().replace("-", "").take(8)}"
+        val coreApi = MultiverseCoreApi.get();
+        val worldManager = coreApi.worldManager
+
+        val mvTemplateOption = worldManager.getWorld(template!!.name)
+
+        val mvTemplate = mvTemplateOption.getOrNull()
+            ?: throw Exception("Шаблонный мир не зарегистрирован в Multiverse!")
+
+        val cloneOptions = CloneWorldOptions.fromTo(mvTemplate, worldName)
+            .keepWorldConfig(true)
+            .keepGameRule(false)
+            .keepWorldBorder(true)
+            .saveBukkitWorld(true)
+
+        val cloneResult = worldManager.cloneWorld(cloneOptions)
+        if (cloneResult.isFailure) {
+            PluginManager.getLogger().severe(
+                "Не удалось клонировать мир $worldName: ${cloneResult.failureReason}",
+            )
+            return null
         }
-        arenas[worldName] = Bukkit.getWorld(worldName)!!
-        return arenas[worldName]!!
+
+        val world = Bukkit.getWorld(worldName)
+        if (world == null) {
+            PluginManager.getLogger().severe("Мир $worldName создан Multiverse, но Bukkit не смог его загрузить.")
+            return null
+        }
+
+        PluginManager.getLogger().info("Мир $worldName успешно склонирован")
+        configureArena(world)
+        arenas[worldName] = world
+        return world
     }
 
     fun deleteArena(worldName: String) {
-        val mvWorldManager = PluginManager.multiverseCore.mvWorldManager
-        if (mvWorldManager.isMVWorld(worldName)) {
-            mvWorldManager.deleteWorld(worldName)
-        } else {
-            Bukkit.getScheduler().runTaskLater(
-                PluginManager.survivalGames,
-                Runnable {
-                    if (deleteWorldFolder(worldName)) {
-                        PluginManager.getLogger().info("Удаление арены $worldName прошло успешно!")
-                    } else {
-                        PluginManager.getLogger().severe("Не удалось удалить папку с ареной $worldName!")
-                    }
-                },
-                20L,
-            )
+        val coreApi = MultiverseCoreApi.get();
+        val worldManager = coreApi.worldManager
+
+        val mvWorldOption = worldManager.getWorld(worldName)
+        if (mvWorldOption.isDefined) {
+            try {
+                val deleteOptions = DeleteWorldOptions.world(mvWorldOption.get())
+                worldManager.deleteWorld(deleteOptions)
+                PluginManager.getLogger().info("Арена $worldName удалена через Multiverse")
+            } catch (e: Exception) {
+                PluginManager.getLogger().warning("Не удалось удалить мир через Multiverse: ${e.message}")
+                deleteWorldFolder(worldName)
+            }
+        }else {
+            deleteWorldFolder(worldName)
         }
+
         arenas.remove(worldName)
     }
 
